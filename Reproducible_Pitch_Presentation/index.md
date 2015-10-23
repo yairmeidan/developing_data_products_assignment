@@ -1,0 +1,92 @@
+---
+title       : What Affects a Confidence Interval for the Mean?
+subtitle    : Assignment for the "Developing Data Products" MOOC by JHU / Coursera
+author      : Yair Meidan
+job         : Lead Data Scientist at Sagarmatha Ltd.
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : [mathjax, quiz, bootstrap]            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+## Preface and Motivation
+
+  
+This is the reproducible pitch presentation to support the shiny app I created for the "Developing Data Products" MOOC, given by JHU via Coursera, as part of the Data Science Specialization.  
+  
+The shiny app itslef is hosted on shinyapps.io:  
+https://yairmeidan.shinyapps.io/developing_data_products_project  
+  
+The reason why I chose this topic for the course project is that as part of my job, sometimes I am asked to estimate certain quantities that are susceptible to noise. Hence, rather than point estimation such as the expected mean, I use Confidence Intervals (CI) estimation. When I do so, it is important to see how sensitive the CIs are to related factors.  
+  
+Acknowledgement: This presentation relies on the theory presented in Brian Caffo's book titled "Statistical inference for data science".
+
+---  
+
+## Confidence Intervals
+  
+Confidence intervals are methods for quantifying uncertainty in our estimates. The fact that the interval has width characterizes that there is randomness that prevents us from getting a perfect estimate. According to the Central Limit Theorem (CLT), the sample mean, $ {\bar x} $, is approximately normal with mean $ {\mu} $ and standard deviation ${\sigma \over \sqrt n}$.  
+  
+Taking the mean and adding and subtracting the relevant normal quantile times the SE yields a confidence interval for the mean. Adding and subtracting 2 SEs works for 95% intervals. The 95% refers to the fact that if one were to repeatedly get samples of size n, about 95% of the intervals obtained would contain µ.  
+  
+The Law of Large Numbers (LLN) states that averages of Independent and Identically Distributed (IID) samples converges to the population means that they are estimating.
+The CLT states that averages are approximately normal, with distributions  
+– centered at the population mean.  
+– with standard deviation equal to the standard error of the mean.  
+  
+
+
+
+---  
+
+## Automatic and Manual CI Calculation in R
+  
+
+```r
+# Set a random seed
+set.seed(23)
+# Generate simulated data from a standard normal distribution
+d<-rnorm(n=100,mean=0,sd=1) 
+# Perforem a t-test
+tt<-t.test(x=d,alternative = "two.sided",conf.level=1-0.05)
+# Show automatically-calculated t-test CI
+c(round(tt$conf.int[1],2),round(tt$conf.int[2],2))
+```
+
+```
+## [1] -0.11  0.26
+```
+
+```r
+# Show manually-calculated t-test CI
+round(mean(d)+c(-1,1)*qnorm(1-(0.05)/2)*sd(d)/sqrt(length(d)),2)
+```
+
+```
+## [1] -0.11  0.26
+```
+
+--- &radio 
+
+## Factors Affecting the Confidence Interval Width
+  
+Here is the formula for such a CI, as calculated in the previous slide:  
+$$ {\bar x \mp z_{1-{\alpha / 2}} \times {s \over \sqrt n} }$$
+  
+As can be understood from the formula, CIs get narrower with any of the following:  
+- less variability (${s}$)
+- larger sample sizes (${n}$)
+- smaller confidence levels (${1-\alpha}$)  
+  
+Does changing the mean of distribution has any effect on the CI width?
+
+1. Yes  
+2. _No_  
+  
+*** .hint  
+Take a look at the equation  
+
+*** .explanation  
+The mean has an effect only on the CI's location, not its width.  
